@@ -5,7 +5,6 @@
     "removeComments": true,
     "isolatedModules": true,
     "declaration": true,
-
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -14,23 +13,22 @@
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
 
-    "module": "Node16",
-    // "moduleResolution": "Node16",
+    "module": "ES2022",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
     "target": "ES2022",
 
+    "types": ["node", "jest"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-
     "preserveConstEnums": true,
     "incremental": true
   },

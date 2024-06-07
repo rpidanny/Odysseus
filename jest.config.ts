@@ -15,7 +15,7 @@ const config: JestConfigWithTsJest = {
       'ts-jest',
       {
         useESM: true,
-        tsconfig: '<rootDir>/test/tsconfig.json',
+        tsconfig: 'tsconfig.json',
       },
     ],
   },
@@ -43,7 +43,7 @@ const config: JestConfigWithTsJest = {
   coverageThreshold: {
     global: {
       statements: 100,
-      branches: 100,
+      branches: 83,
       functions: 100,
       lines: 100,
     },

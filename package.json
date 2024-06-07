@@ -1,38 +1,39 @@
 {
-  "name": "@rpidanny/typescript-package-template",
-  "version": "1.5.0",
-  "description": "Typescript package boilerplate template",
+  "name": "@rpidanny/odysseus",
+  "version": "0.0.0",
+  "description": "Odysseus is a web scraping library built on top of Playwright, designed to handle dynamic web pages and CAPTCHA challenges with ease.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
-  "type": "module",
   "scripts": {
     "build": "./node_modules/typescript/bin/tsc -p ./tsconfig.build.json",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "npm run lint -- --fix",
-    "test": "jest --coverage",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "dev": "ts-node src/index.ts",
+    "prepare": "husky",
     "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rpidanny/typescript-package-template.git"
+    "url": "git+https://github.com/rpidanny/odysseus.git"
   },
   "keywords": [
     "typescript",
     "javascript",
-    "template",
-    "boilerplate"
+    "web-scraping",
+    "CAPTCHA"
   ],
   "author": "Abhishek <abhishek.rpidanny@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rpidanny/typescript-package-template/issues"
+    "url": "https://github.com/rpidanny/odysseus/issues"
   },
-  "homepage": "https://github.com/rpidanny/typescript-package-template#readme",
+  "homepage": "https://github.com/rpidanny/odysseus#readme",
   "devDependencies": {
     "@commitlint/cli": "^18.2.0",
     "@commitlint/config-conventional": "^18.1.0",
     "@rpidanny/eslint-config-typescript": "^1.4.1",
+    "@rpidanny/quill": "^1.4.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^11.0.0",
     "@semantic-release/git": "^10.0.1",
@@ -54,5 +55,9 @@
   ],
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "p-retry": "^6.2.0",
+    "playwright": "^1.44.1"
   }
 }
