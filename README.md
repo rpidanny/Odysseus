@@ -34,7 +34,7 @@ const config: IConfig = {
 }
 
 // Optional logger
-const logger = new Quill({})
+const logger = new Quill()
 
 // Create an instance of Odysseus
 const odysseus = new Odysseus(config, logger)

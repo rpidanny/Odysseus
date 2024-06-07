@@ -2,7 +2,7 @@ import { Quill } from '@rpidanny/quill'
 
 import { Odysseus } from '../src/odysseus'
 
-const logger = new Quill({})
+const logger = new Quill()
 const odysseus = new Odysseus({ headless: false }, logger)
 
 async function fetchContent(url: string, delay: number = 3_000) {
