@@ -10,7 +10,7 @@ Odysseus is a web scraping library built on top of Playwright, designed to handl
 - **Retry Mechanism**: Automatically retries fetching content on failure, with configurable retry attempts.
 - **Configurable Delays**: Allows setting custom delays for waiting after page loads.
 - **Logging Support**: Integrates with custom logging mechanisms for debugging and monitoring.
-- **CAPTCHA Handling**: Supports human-in-the-loop [CAPTCHA](https://en.wikipedia.org/wiki/CAPTCHA) handling for uninterrupted scraping.
+- **CAPTCHA Handling**: Supports [human-in-the-loop](https://www.ctwo.com/article/human-in-the-loop-the-key-to-lasting-automation-success#:~:text=With%20human%2Din%2Dthe%2D,to%20enhance%20quality%20and%20efficiency.) [CAPTCHA](https://en.wikipedia.org/wiki/CAPTCHA) handling for uninterrupted scraping.
 
 ## Install
 
