@@ -9,7 +9,7 @@
     "build": "./node_modules/typescript/bin/tsc -p ./tsconfig.build.json",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "npm run lint -- --fix",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --detectOpenHandles --forceExit",
     "dev": "ts-node src/index.ts",
     "prepare": "husky install",
     "postinstall": "npx playwright install",

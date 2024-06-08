@@ -8,4 +8,6 @@ export interface IConfig {
   headless?: boolean
   delay?: number
   retry?: number
+  waitOnCaptcha?: boolean
+  captchaDelay?: number
 }
