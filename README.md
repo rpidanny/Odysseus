@@ -40,7 +40,7 @@ const logger = new Quill()
 // Create an instance of Odysseus
 const odysseus = new Odysseus(config, logger)
 
-async function fetchContent(url: string, delay: number = 3_000) {
+async function fetchContent(url: string, delay: number) {
   try {
     const content = await odysseus.getContent(url, delay)
     console.log(content)
