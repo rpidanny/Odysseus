@@ -4,6 +4,7 @@
   "description": "Odysseus is a web scraping library built on top of Playwright, designed to handle dynamic web pages and CAPTCHA challenges with ease.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
+  "type": "module",
   "scripts": {
     "build": "./node_modules/typescript/bin/tsc -p ./tsconfig.build.json",
     "lint": "eslint . --ext .js,.ts",
