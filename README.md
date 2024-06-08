@@ -31,6 +31,7 @@ const config: IConfig = {
   headless: false, // Runs browser in non-headless mode
   delay: 5000, // Wait for 5 seconds after page loads
   retry: 5, // Retry fetching content up to 5 times
+  waitOnCaptcha: true, // Wait for user action when captcha is detected
 }
 
 // Optional logger
