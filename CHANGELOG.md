@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/rpidanny/odysseus/compare/v1.1.1...v1.2.0) (2024-06-08)
+
+
+### Features
+
+* handle captcha with human in the loop ([#6](https://github.com/rpidanny/odysseus/issues/6)) ([2e23371](https://github.com/rpidanny/odysseus/commit/2e233716c1e3d88e0871917e3ef42c58ea246cfd))
+
 ## [1.1.1](https://github.com/rpidanny/odysseus/compare/v1.1.0...v1.1.1) (2024-06-08)
 
 
