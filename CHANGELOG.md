@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/rpidanny/odysseus/compare/v1.1.0...v1.1.1) (2024-06-08)
+
+
+### Bug Fixes
+
+* commitlint on ci ([602e6b0](https://github.com/rpidanny/odysseus/commit/602e6b0233cd6660b1a258791d37741d68f8e56a))
+* package type ([0ad4b20](https://github.com/rpidanny/odysseus/commit/0ad4b20a7c5f8359016f5a6d3cee78d67fd42241))
+* prepare script ([cabc995](https://github.com/rpidanny/odysseus/commit/cabc9958fa7ce52fde3b2c168c9997d0eca1b0f9))
+
 # [1.1.0](https://github.com/rpidanny/odysseus/compare/v1.0.0...v1.1.0) (2024-06-07)
 
 
