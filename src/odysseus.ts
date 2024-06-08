@@ -11,10 +11,19 @@ export class Odysseus {
   private readonly defaultHeadless = true
   private readonly defaultDelay = 3_000
   private readonly defaultRetry = 3
+  private readonly defaultWaitOnCaptcha = true
+  private readonly defaultCaptchaDelay = 10_000
+
+  private captchaMarkers: string[] = [
+    '<form method="get" id="gs_captcha_f">', // Google
+    'https://challenges.cloudflare.com/cdn-cgi/challenge-platform', // Cloudflare
+  ]
 
   private headless: boolean
   private delay: number
   private retry: number
+  private waitOnCaptcha: boolean
+  private captchaDelay: number
 
   constructor(
     private readonly config: IConfig = {},
@@ -23,6 +32,8 @@ export class Odysseus {
     this.headless = this.config.headless ?? this.defaultHeadless
     this.delay = this.config.delay ?? this.defaultDelay
     this.retry = this.config.retry ?? this.defaultRetry
+    this.waitOnCaptcha = this.config.waitOnCaptcha ?? this.defaultWaitOnCaptcha
+    this.captchaDelay = this.config.captchaDelay ?? this.defaultCaptchaDelay
   }
 
   private async init(): Promise<void> {
@@ -39,13 +50,28 @@ export class Odysseus {
     // await this.page.waitForLoadState('networkidle')
     await this.page.waitForTimeout(delay || this.delay)
 
-    return await this.page.content()
+    let content = await this.page.content()
+
+    if (this.waitOnCaptcha && this.isCaptcha(content)) {
+      this.logger?.warn('Captcha detected. Waiting for user input...')
+
+      do {
+        await this.page.waitForTimeout(this.captchaDelay)
+        content = await this.page.content()
+      } while (this.isCaptcha(content))
+    }
+
+    return content
   }
 
   public async close(): Promise<void> {
     if (this.browser) {
       await this.browser.close()
     }
+  }
+
+  public isCaptcha(content: string): boolean {
+    return this.captchaMarkers.some(marker => content.includes(marker))
   }
 
   public async getContent(url: string, delay?: number): Promise<string> {

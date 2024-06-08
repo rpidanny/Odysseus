@@ -12,6 +12,8 @@ Creates an instance of the `Odysseus` class.
   - `headless` (boolean): Whether to run the browser in headless mode. Defaults to `true`.
   - `delay` (number): Delay time in milliseconds for waiting after the page loads. Defaults to `3000`.
   - `retry` (number): Number of retry attempts for fetching content. Defaults to `3`.
+  - `waitOnCaptcha` (boolean): Weather to wait for user action when captcha is detected. Defaults to `true`.
+  - `captchaDelay` (number): Delay time in milliseconds before polling page to detect captcha solve. Defaults to `10_000`.
 - `logger` (optional): An object conforming to the `ILogger` interface. Used for logging debug and warning messages.
 
 ## Public Methods
