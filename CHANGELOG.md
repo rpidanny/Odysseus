@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/rpidanny/odysseus/compare/v1.2.0...v1.3.0) (2024-06-09)
+
+
+### Features
+
+* only install chromium ([#7](https://github.com/rpidanny/odysseus/issues/7)) ([e82b044](https://github.com/rpidanny/odysseus/commit/e82b04410b775ba8b9224e025f47321dc18e95f7))
+
 # [1.2.0](https://github.com/rpidanny/odysseus/compare/v1.1.1...v1.2.0) (2024-06-08)
 
 
