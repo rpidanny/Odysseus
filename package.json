@@ -12,7 +12,7 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage --detectOpenHandles --forceExit",
     "dev": "ts-node src/index.ts",
     "prepare": "husky install",
-    "postinstall": "npx playwright install",
+    "postinstall": "npx playwright install chromium",
     "semantic-release": "semantic-release"
   },
   "repository": {
