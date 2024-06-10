@@ -35,6 +35,16 @@ describe('Odysseus', () => {
     expect(content).toContain('Example Domain')
   })
 
+  it('should handle multiple cycles of browser open/close', async () => {
+    const content = await odysseus.getContent(url, 1_000)
+    expect(content).toContain('Example Domain')
+
+    await odysseus.close()
+
+    const content2 = await odysseus.getContent(url, 1_000)
+    expect(content2).toContain('Example Domain')
+  })
+
   it('should fetch content from a dynamic web page', async () => {
     const filePath = path.join(__dirname, '../test', 'data', 'page1.html')
     const url = `file://${filePath}`
