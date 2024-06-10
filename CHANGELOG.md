@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/rpidanny/odysseus/compare/v1.3.0...v1.3.1) (2024-06-10)
+
+
+### Bug Fixes
+
+* handle browser close ([#8](https://github.com/rpidanny/odysseus/issues/8)) ([d1cd17d](https://github.com/rpidanny/odysseus/commit/d1cd17d84abcd571815a5fa6138aa64221e4966e))
+
 # [1.3.0](https://github.com/rpidanny/odysseus/compare/v1.2.0...v1.3.0) (2024-06-09)
 
 
