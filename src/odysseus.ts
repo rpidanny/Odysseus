@@ -37,11 +37,9 @@ export class Odysseus {
   }
 
   private async init(): Promise<void> {
-    if (!this.browser) {
-      this.browser = await chromium.launch({ headless: this.headless })
-      this.context = await this.browser.newContext()
-      this.page = await this.context.newPage()
-    }
+    this.browser = await chromium.launch({ headless: this.headless })
+    this.context = await this.browser.newContext()
+    this.page = await this.context.newPage()
   }
 
   private async getPageContent(url: string, delay?: number): Promise<string> {
@@ -75,7 +73,7 @@ export class Odysseus {
   }
 
   public async getContent(url: string, delay?: number): Promise<string> {
-    if (!this.page) {
+    if (!this.browser || !this.browser.isConnected()) {
       await this.init()
     }
 
