@@ -6,7 +6,7 @@ import { IConfig, ILogger } from './interfaces.js'
 export class Odysseus {
   private browser!: Browser
   private context!: BrowserContext
-  private page!: Page
+  private mainPage!: Page
 
   private readonly defaultHeadless = true
   private readonly defaultDelay = 3_000
@@ -59,8 +59,8 @@ body {
   public async init(): Promise<void> {
     this.browser = await chromium.launch({ headless: this.headless })
     this.context = await this.browser.newContext()
-    this.page = await this.context.newPage()
-    await this.page.setContent(this.config.initHtml || this.defaultInitHtml)
+    this.mainPage = await this.context.newPage()
+    await this.mainPage.setContent(this.config.initHtml || this.defaultInitHtml)
   }
 
   /*
@@ -68,7 +68,7 @@ body {
     It is used to get the content of the page that is loaded when the browser is initialized.
   */
   public async getMainPageContent(): Promise<string> {
-    return this.page.content()
+    return this.mainPage.content()
   }
 
   private async getPageContent(url: string, delay?: number): Promise<string> {
@@ -76,7 +76,7 @@ body {
 
     await page.goto(url)
     await page.waitForLoadState('domcontentloaded')
-    // await this.page.waitForLoadState('networkidle')
+    // await page.waitForLoadState('networkidle')
     await page.waitForTimeout(delay || this.delay)
 
     let content = await page.content()
@@ -85,8 +85,8 @@ body {
       this.logger?.warn('Captcha detected. Waiting for user input...')
 
       do {
-        await this.page.waitForTimeout(this.captchaDelay)
-        content = await this.page.content()
+        await page.waitForTimeout(this.captchaDelay)
+        content = await page.content()
       } while (this.isCaptcha(content))
     }
 
