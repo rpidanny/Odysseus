@@ -10,4 +10,5 @@ export interface IConfig {
   retry?: number
   waitOnCaptcha?: boolean
   captchaDelay?: number
+  initHtml?: string
 }
