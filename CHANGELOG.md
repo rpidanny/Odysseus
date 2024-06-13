@@ -1,3 +1,17 @@
+## [2.0.0](https://github.com/rpidanny/odysseus/compare/v1.3.1...v2.0.0) (2024-06-13)
+
+### ⚠ BREAKING CHANGES
+
+* support concurrent calls (#14)
+
+### Features
+
+* support concurrent calls ([#14](https://github.com/rpidanny/odysseus/issues/14)) ([10a6d22](https://github.com/rpidanny/odysseus/commit/10a6d22625bc750b84740dc58e197c7241c0415b))
+
+### Bug Fixes
+
+* semantic release versions ([#15](https://github.com/rpidanny/odysseus/issues/15)) ([9993cdb](https://github.com/rpidanny/odysseus/commit/9993cdb8f40db4983699b77598b8fd1883c34fff))
+
 ## [1.3.1](https://github.com/rpidanny/odysseus/compare/v1.3.0...v1.3.1) (2024-06-10)
 
 
