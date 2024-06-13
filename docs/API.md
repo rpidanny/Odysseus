@@ -18,6 +18,10 @@ Creates an instance of the `Odysseus` class.
 
 ## Public Methods
 
+### `async init(): Promise<void>`
+
+Initializes Odysseus.
+
 ### `async close(): Promise<void>`
 
 Closes the browser if it is open.
