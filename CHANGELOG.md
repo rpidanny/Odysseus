@@ -1,3 +1,9 @@
+## [2.1.0](https://github.com/rpidanny/odysseus/compare/v2.0.0...v2.1.0) (2024-06-13)
+
+### Features
+
+* add init page content ([#16](https://github.com/rpidanny/odysseus/issues/16)) ([e4d2d7f](https://github.com/rpidanny/odysseus/commit/e4d2d7f9398c2110efb5d0e07571ef9e0a74707c))
+
 ## [2.0.0](https://github.com/rpidanny/odysseus/compare/v1.3.1...v2.0.0) (2024-06-13)
 
 ### ⚠ BREAKING CHANGES
