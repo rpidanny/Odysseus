@@ -34,6 +34,7 @@ Fetches the content of the specified URL with optional delay.
 
 - `url` (string): The URL of the page to fetch content from.
 - `delay` (optional, number): The delay time in milliseconds to wait after the page loads. If not specified, the default delay will be used.
+- `waitOnCaptcha` (optional, boolean): Overrides the global `waitOnCaptcha`.
 
 #### Returns:
 

@@ -21,7 +21,10 @@ describe('Odysseus', () => {
   let odysseus: Odysseus
 
   beforeEach(async () => {
-    odysseus = new Odysseus({ delay: 100, captchaDelay: 200, headless: true }, logger)
+    odysseus = new Odysseus(
+      { delay: 100, captchaDelay: 200, headless: true, waitOnCaptcha: false },
+      logger,
+    )
 
     await odysseus.init()
   })
@@ -118,6 +121,9 @@ describe('Odysseus', () => {
       const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
       const url = `file://${filePath}`
 
+      const odysseus = new Odysseus({ delay: 100, waitOnCaptcha: true }, logger)
+      await odysseus.init()
+
       const getContentPromise = odysseus.getContent(url)
 
       await new Promise(resolve =>
@@ -129,14 +135,40 @@ describe('Odysseus', () => {
       )
     })
 
-    it('should not wait for user input on captcha when waitOnCaptcha is false', async () => {
+    it('should wait for user input when a captcha is detected when waitOnCaptcha is true on getContent', async () => {
       const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
       const url = `file://${filePath}`
 
-      const odysseus = new Odysseus({ delay: 100, waitOnCaptcha: false }, logger)
-      await odysseus.init()
+      const getContentPromise = odysseus.getContent(url, 100, true)
+
+      await new Promise(resolve =>
+        setTimeout(() => {
+          expect(warn).toHaveBeenCalledWith('Captcha detected. Waiting for user input...')
+          expect(getContentPromise).toBeInstanceOf(Promise)
+          resolve('done')
+        }, 2_000),
+      )
+    })
+
+    it('should not wait for user input on captcha when waitOnCaptcha is false on constructor', async () => {
+      const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
+      const url = `file://${filePath}`
 
       const content = await odysseus.getContent(url, 1_000)
+
+      await odysseus.close()
+
+      expect(content).toContain('https://challenges.cloudflare.com/cdn-cgi/challenge-platform')
+    })
+
+    it('should not wait for user input on captcha when waitOnCaptcha false on getContent', async () => {
+      const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
+      const url = `file://${filePath}`
+
+      const odysseus = new Odysseus({ delay: 100, waitOnCaptcha: true }, logger)
+      await odysseus.init()
+
+      const content = await odysseus.getContent(url, 1_000, false)
 
       await odysseus.close()
 
