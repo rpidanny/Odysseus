@@ -40,19 +40,26 @@ const logger = new Quill()
 // Create an instance of Odysseus
 const odysseus = new Odysseus(config, logger)
 
+// Initialize odysseus
+await odysseus.init()
+
 async function fetchContent(url: string, delay: number) {
   try {
     const content = await odysseus.getContent(url, delay)
     console.log(content)
   } catch (error) {
     console.error('Failed to fetch content:', error)
-  } finally {
-    // Close the browser
-    await odysseus.close()
   }
 }
 
-await fetchContent('https://www.tiktok.com/explore', 6_000)
+// Each fetchContent opens a new tab so can be run concurrently
+await Promise.all([
+  fetchContent('https://www.tiktok.com/explore', 6_000),
+  fetchContent('https://www.tiktok.com/explore', 6_000),
+  fetchContent('https://www.tiktok.com/explore', 6_000),
+])
+
+await odysseus.close()
 ```
 
 ## API Documentation

@@ -36,19 +36,21 @@ export class Odysseus {
     this.captchaDelay = this.config.captchaDelay ?? this.defaultCaptchaDelay
   }
 
-  private async init(): Promise<void> {
+  public async init(): Promise<void> {
     this.browser = await chromium.launch({ headless: this.headless })
     this.context = await this.browser.newContext()
     this.page = await this.context.newPage()
   }
 
   private async getPageContent(url: string, delay?: number): Promise<string> {
-    await this.page.goto(url)
-    await this.page.waitForLoadState('domcontentloaded')
-    // await this.page.waitForLoadState('networkidle')
-    await this.page.waitForTimeout(delay || this.delay)
+    const page = await this.context.newPage()
 
-    let content = await this.page.content()
+    await page.goto(url)
+    await page.waitForLoadState('domcontentloaded')
+    // await this.page.waitForLoadState('networkidle')
+    await page.waitForTimeout(delay || this.delay)
+
+    let content = await page.content()
 
     if (this.waitOnCaptcha && this.isCaptcha(content)) {
       this.logger?.warn('Captcha detected. Waiting for user input...')
@@ -58,6 +60,8 @@ export class Odysseus {
         content = await this.page.content()
       } while (this.isCaptcha(content))
     }
+
+    await page.close()
 
     return content
   }
@@ -73,8 +77,8 @@ export class Odysseus {
   }
 
   public async getContent(url: string, delay?: number): Promise<string> {
-    if (!this.browser || !this.browser.isConnected()) {
-      await this.init()
+    if (!this.browser) {
+      throw new Error('Browser not initialized. Call init() first.')
     }
 
     this.logger?.debug(`Fetching content from ${url}`)

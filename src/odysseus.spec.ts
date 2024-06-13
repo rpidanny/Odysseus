@@ -20,12 +20,15 @@ describe('Odysseus', () => {
   }
   let odysseus: Odysseus
 
-  beforeEach(() => {
-    odysseus = new Odysseus({ delay: 100, captchaDelay: 200 }, logger)
+  beforeEach(async () => {
+    odysseus = new Odysseus({ delay: 100, captchaDelay: 200, headless: true }, logger)
+
+    await odysseus.init()
   })
 
   afterEach(async () => {
     jest.restoreAllMocks()
+    jest.clearAllMocks()
     await odysseus.close()
   })
 
@@ -35,14 +38,32 @@ describe('Odysseus', () => {
     expect(content).toContain('Example Domain')
   })
 
-  it('should handle multiple cycles of browser open/close', async () => {
+  it('should fetch contents from multiple calls concurrently', async () => {
+    const contents = await Promise.all([
+      odysseus.getContent(url, 1_000),
+      odysseus.getContent('https://www.iana.org/help/example-domains', 1_000),
+      odysseus.getContent(url, 1_000),
+      odysseus.getContent('https://www.iana.org/help/example-domains', 1_000),
+    ])
+
+    expect(contents[0]).toContain('This domain is for use in illustrative examples in documents')
+    expect(contents[1]).toContain('Further Reading')
+    expect(contents[2]).toContain('This domain is for use in illustrative examples in documents')
+    expect(contents[3]).toContain('Further Reading')
+  })
+
+  it('should throw error when getContent is called without init', async () => {
+    const odysseus = new Odysseus({ headless: true }, logger)
+    await expect(odysseus.getContent(url, 1_000)).rejects.toThrow(Error)
+  })
+
+  it('should throw error when browser closed', async () => {
     const content = await odysseus.getContent(url, 1_000)
     expect(content).toContain('Example Domain')
 
     await odysseus.close()
 
-    const content2 = await odysseus.getContent(url, 1_000)
-    expect(content2).toContain('Example Domain')
+    await expect(odysseus.getContent(url, 1_000)).rejects.toThrow(Error)
   })
 
   it('should fetch content from a dynamic web page', async () => {
@@ -107,10 +128,11 @@ describe('Odysseus', () => {
       const url = `file://${filePath}`
 
       const odysseus = new Odysseus({ delay: 100, waitOnCaptcha: false }, logger)
+      await odysseus.init()
 
       const content = await odysseus.getContent(url, 1_000)
 
-      odysseus.close()
+      await odysseus.close()
 
       expect(content).toContain('https://challenges.cloudflare.com/cdn-cgi/challenge-platform')
     })
