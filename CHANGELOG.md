@@ -1,3 +1,9 @@
+## [2.1.2](https://github.com/rpidanny/odysseus/compare/v2.1.1...v2.1.2) (2024-06-13)
+
+### Bug Fixes
+
+* incomplete page read after captcha ([f145265](https://github.com/rpidanny/odysseus/commit/f145265adf126acf47c8a020e31c4ce6cfd496cf))
+
 ## [2.1.1](https://github.com/rpidanny/odysseus/compare/v2.1.0...v2.1.1) (2024-06-13)
 
 ### Bug Fixes
