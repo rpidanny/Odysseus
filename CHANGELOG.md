@@ -1,3 +1,9 @@
+## [2.1.1](https://github.com/rpidanny/odysseus/compare/v2.1.0...v2.1.1) (2024-06-13)
+
+### Bug Fixes
+
+* captcha handling ([#17](https://github.com/rpidanny/odysseus/issues/17)) ([1537bd1](https://github.com/rpidanny/odysseus/commit/1537bd1a86c13dc8390aa03fb99fa2f31a512404))
+
 ## [2.1.0](https://github.com/rpidanny/odysseus/compare/v2.0.0...v2.1.0) (2024-06-13)
 
 ### Features
