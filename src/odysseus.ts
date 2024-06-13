@@ -18,6 +18,26 @@ export class Odysseus {
     '<form method="get" id="gs_captcha_f">', // Google
     'https://challenges.cloudflare.com/cdn-cgi/challenge-platform', // Cloudflare
   ]
+  private defaultInitHtml = `
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap');
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.centered {
+    font-size: 3rem;
+    color: #333;
+}
+
+</style><div class="centered">Odysseus </div>`
 
   private headless: boolean
   private delay: number
@@ -40,6 +60,15 @@ export class Odysseus {
     this.browser = await chromium.launch({ headless: this.headless })
     this.context = await this.browser.newContext()
     this.page = await this.context.newPage()
+    await this.page.setContent(this.config.initHtml || this.defaultInitHtml)
+  }
+
+  /*
+    This method is used to get the content of the main page.
+    It is used to get the content of the page that is loaded when the browser is initialized.
+  */
+  public async getMainPageContent(): Promise<string> {
+    return this.page.content()
   }
 
   private async getPageContent(url: string, delay?: number): Promise<string> {

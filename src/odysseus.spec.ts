@@ -38,6 +38,12 @@ describe('Odysseus', () => {
     expect(content).toContain('Example Domain')
   })
 
+  it('should render init HTML', async () => {
+    const content = await odysseus.getMainPageContent()
+
+    expect(content).toContain('Odysseus')
+  })
+
   it('should fetch contents from multiple calls concurrently', async () => {
     const contents = await Promise.all([
       odysseus.getContent(url, 1_000),
