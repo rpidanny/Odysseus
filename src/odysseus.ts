@@ -71,17 +71,21 @@ body {
     return this.mainPage.content()
   }
 
-  private async getPageContent(url: string, delay?: number): Promise<string> {
+  private async getPageContent(
+    url: string,
+    delay: number,
+    waitOnCaptcha: boolean,
+  ): Promise<string> {
     const page = await this.context.newPage()
 
     await page.goto(url)
     await page.waitForLoadState('domcontentloaded')
     // await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(delay || this.delay)
+    await page.waitForTimeout(delay)
 
     let content = await page.content()
 
-    if (this.waitOnCaptcha && this.isCaptcha(content)) {
+    if (waitOnCaptcha && this.isCaptcha(content)) {
       this.logger?.warn('Captcha detected. Waiting for user input...')
 
       do {
@@ -109,20 +113,23 @@ body {
     return this.captchaMarkers.some(marker => content.includes(marker))
   }
 
-  public async getContent(url: string, delay?: number): Promise<string> {
+  public async getContent(url: string, delay?: number, waitOnCaptcha?: boolean): Promise<string> {
     if (!this.browser) {
       throw new Error('Browser not initialized. Call init() first.')
     }
 
     this.logger?.debug(`Fetching content from ${url}`)
 
-    return pRetry(this.getPageContent.bind(this, url, delay), {
-      retries: this.retry,
-      onFailedAttempt: error => {
-        this.logger?.warn(
-          `Attempt ${error.attemptNumber} failed with "${error.message}". There are ${error.retriesLeft} retries left.`,
-        )
+    return pRetry(
+      this.getPageContent.bind(this, url, delay || this.delay, waitOnCaptcha ?? this.waitOnCaptcha),
+      {
+        retries: this.retry,
+        onFailedAttempt: error => {
+          this.logger?.warn(
+            `Attempt ${error.attemptNumber} failed with "${error.message}". There are ${error.retriesLeft} retries left.`,
+          )
+        },
       },
-    })
+    )
   }
 }
