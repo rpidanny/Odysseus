@@ -1,3 +1,9 @@
+## [2.2.0](https://github.com/rpidanny/odysseus/compare/v2.1.2...v2.2.0) (2024-06-13)
+
+### Features
+
+* add waitOnCaptcha override ([#18](https://github.com/rpidanny/odysseus/issues/18)) ([7ae1ed5](https://github.com/rpidanny/odysseus/commit/7ae1ed59110f067d166c01beffb683cbab06d641))
+
 ## [2.1.2](https://github.com/rpidanny/odysseus/compare/v2.1.1...v2.1.2) (2024-06-13)
 
 ### Bug Fixes
