@@ -88,6 +88,10 @@ body {
         await page.waitForTimeout(this.captchaDelay)
         content = await page.content()
       } while (this.isCaptcha(content))
+
+      // wait for the page to load after the captcha
+      await page.waitForTimeout(this.captchaDelay)
+      content = await page.content()
     }
 
     await page.close()
