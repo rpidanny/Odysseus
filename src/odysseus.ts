@@ -17,6 +17,7 @@ export class Odysseus {
   private captchaMarkers: string[] = [
     '<form method="get" id="gs_captcha_f">', // Google
     'https://challenges.cloudflare.com/cdn-cgi/challenge-platform', // Cloudflare
+    'Performance & security by Cloudflare', // Cloudflare
   ]
   private defaultInitHtml = `
 <style>
