@@ -1,3 +1,9 @@
+## [2.3.0](https://github.com/rpidanny/odysseus/compare/v2.2.0...v2.3.0) (2024-06-14)
+
+### Features
+
+* add cloudflare captcha marker ([#20](https://github.com/rpidanny/odysseus/issues/20)) ([5a9bfd1](https://github.com/rpidanny/odysseus/commit/5a9bfd1a0a68d4c5a6b28a1c140a6fdeb4132193))
+
 ## [2.2.0](https://github.com/rpidanny/odysseus/compare/v2.1.2...v2.2.0) (2024-06-13)
 
 ### Features
