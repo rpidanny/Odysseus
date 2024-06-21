@@ -1,3 +1,4 @@
+import { convert } from 'html-to-text'
 import pRetry from 'p-retry'
 import { Browser, BrowserContext, chromium, Page } from 'playwright'
 
@@ -102,6 +103,23 @@ body {
     await page.close()
 
     return content
+  }
+
+  protected stripHtmlTags(html: string): string {
+    const text = convert(html, {
+      // wordwrap: 130,
+      wordwrap: false, // Set to false to avoid wrapping text
+    })
+    return text.trim()
+  }
+
+  public async getTextContent(
+    url: string,
+    delay?: number,
+    waitOnCaptcha?: boolean,
+  ): Promise<string> {
+    const html = await this.getContent(url, delay, waitOnCaptcha)
+    return this.stripHtmlTags(html)
   }
 
   public async close(): Promise<void> {

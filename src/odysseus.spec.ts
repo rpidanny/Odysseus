@@ -35,65 +35,78 @@ describe('Odysseus', () => {
     await odysseus.close()
   })
 
-  it('should fetch content from a URL', async () => {
-    const content = await odysseus.getContent(url, 1_000)
+  describe('getContent', () => {
+    it('should fetch content from a URL', async () => {
+      const content = await odysseus.getContent(url, 1_000)
 
-    expect(content).toContain('Example Domain')
+      expect(content).toContain('Example Domain')
+    })
+
+    it('should render init HTML', async () => {
+      const content = await odysseus.getMainPageContent()
+
+      expect(content).toContain('Odysseus')
+    })
+
+    it('should fetch contents from multiple calls concurrently', async () => {
+      const contents = await Promise.all([
+        odysseus.getContent(url, 1_000),
+        odysseus.getContent('https://www.iana.org/help/example-domains', 1_000),
+        odysseus.getContent(url, 1_000),
+        odysseus.getContent('https://www.iana.org/help/example-domains', 1_000),
+      ])
+
+      expect(contents[0]).toContain('This domain is for use in illustrative examples in documents')
+      expect(contents[1]).toContain('Further Reading')
+      expect(contents[2]).toContain('This domain is for use in illustrative examples in documents')
+      expect(contents[3]).toContain('Further Reading')
+    })
+
+    it('should throw error when getContent is called without init', async () => {
+      const odysseus = new Odysseus({ headless: true }, logger)
+      await expect(odysseus.getContent(url, 1_000)).rejects.toThrow(Error)
+    })
+
+    it('should throw error when browser closed', async () => {
+      const content = await odysseus.getContent(url, 1_000)
+      expect(content).toContain('Example Domain')
+
+      await odysseus.close()
+
+      await expect(odysseus.getContent(url, 1_000)).rejects.toThrow(Error)
+    })
+
+    it('should fetch content from a dynamic web page', async () => {
+      const filePath = path.join(__dirname, '../test', 'data', 'page1.html')
+      const url = `file://${filePath}`
+
+      const content = await odysseus.getContent(url, 1_000)
+
+      expect(content).toContain('<div id="message">New Text</div>')
+    })
+
+    it('should log debug messages', async () => {
+      await odysseus.getContent(url, 1_000)
+
+      expect(debug).toHaveBeenCalledWith('Fetching content from https://example.com')
+    })
+
+    it('should log warning messages when failing to load page', async () => {
+      await expect(odysseus.getContent('file:///invalid')).rejects.toThrow(Error)
+
+      expect(warn).toHaveBeenCalledTimes(4)
+    })
   })
 
-  it('should render init HTML', async () => {
-    const content = await odysseus.getMainPageContent()
+  describe('getTextContent', () => {
+    it('should only return text without any html, css, js', async () => {
+      const filePath = path.join(__dirname, '../test', 'data', 'page1.html')
+      const url = `file://${filePath}`
 
-    expect(content).toContain('Odysseus')
-  })
+      const content = await odysseus.getTextContent(url, 1_000)
 
-  it('should fetch contents from multiple calls concurrently', async () => {
-    const contents = await Promise.all([
-      odysseus.getContent(url, 1_000),
-      odysseus.getContent('https://www.iana.org/help/example-domains', 1_000),
-      odysseus.getContent(url, 1_000),
-      odysseus.getContent('https://www.iana.org/help/example-domains', 1_000),
-    ])
-
-    expect(contents[0]).toContain('This domain is for use in illustrative examples in documents')
-    expect(contents[1]).toContain('Further Reading')
-    expect(contents[2]).toContain('This domain is for use in illustrative examples in documents')
-    expect(contents[3]).toContain('Further Reading')
-  })
-
-  it('should throw error when getContent is called without init', async () => {
-    const odysseus = new Odysseus({ headless: true }, logger)
-    await expect(odysseus.getContent(url, 1_000)).rejects.toThrow(Error)
-  })
-
-  it('should throw error when browser closed', async () => {
-    const content = await odysseus.getContent(url, 1_000)
-    expect(content).toContain('Example Domain')
-
-    await odysseus.close()
-
-    await expect(odysseus.getContent(url, 1_000)).rejects.toThrow(Error)
-  })
-
-  it('should fetch content from a dynamic web page', async () => {
-    const filePath = path.join(__dirname, '../test', 'data', 'page1.html')
-    const url = `file://${filePath}`
-
-    const content = await odysseus.getContent(url, 1_000)
-
-    expect(content).toContain('<div id="message">New Text</div>')
-  })
-
-  it('should log debug messages', async () => {
-    await odysseus.getContent(url, 1_000)
-
-    expect(debug).toHaveBeenCalledWith('Fetching content from https://example.com')
-  })
-
-  it('should log warning messages when failing to load page', async () => {
-    await expect(odysseus.getContent('file:///invalid')).rejects.toThrow(Error)
-
-    expect(warn).toHaveBeenCalledTimes(4)
+      expect(content).toEqual('WELCOME TO MY PAGE\n\nNew Text')
+    })
   })
 
   describe('captcha', () => {
