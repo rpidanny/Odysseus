@@ -107,8 +107,8 @@ body {
 
   protected stripHtmlTags(html: string): string {
     const text = convert(html, {
-      wordwrap: 130,
-      // wordwrap: false, // Set to false to avoid wrapping text
+      // wordwrap: 130,
+      wordwrap: false, // Set to false to avoid wrapping text
     })
     return text.trim()
   }
