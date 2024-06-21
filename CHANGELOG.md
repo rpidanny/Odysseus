@@ -1,3 +1,9 @@
+## [2.4.0](https://github.com/rpidanny/odysseus/compare/v2.3.0...v2.4.0) (2024-06-21)
+
+### Features
+
+* add getTextContent ([#22](https://github.com/rpidanny/odysseus/issues/22)) ([a650046](https://github.com/rpidanny/odysseus/commit/a650046d7f24f68ec2bacd488e8fdcf267a5e555))
+
 ## [2.3.0](https://github.com/rpidanny/odysseus/compare/v2.2.0...v2.3.0) (2024-06-14)
 
 ### Features

@@ -1,6 +1,6 @@
 {
   "name": "@rpidanny/odysseus",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Odysseus is a web scraping library built on top of Playwright, designed to handle dynamic web pages and CAPTCHA challenges with ease.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
