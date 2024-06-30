@@ -3,6 +3,7 @@ import fs from 'fs/promises'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 
+import { CaptchaError } from './errors/captcha.error'
 import { Odysseus } from './odysseus'
 
 describe('Odysseus', () => {
@@ -186,6 +187,35 @@ describe('Odysseus', () => {
       await odysseus.close()
 
       expect(content).toContain('https://challenges.cloudflare.com/cdn-cgi/challenge-platform')
+    })
+
+    describe('throwOnCaptcha', () => {
+      it('should throw error on captcha when throwOnCaptcha is true on constructor', async () => {
+        const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
+        const url = `file://${filePath}`
+
+        const odysseus = new Odysseus(
+          { delay: 100, throwOnCaptcha: true, waitOnCaptcha: false },
+          logger,
+        )
+        await odysseus.init()
+
+        await expect(odysseus.getContent(url, 100)).rejects.toThrow(CaptchaError)
+
+        await odysseus.close()
+      })
+
+      it('should throw error on captcha when throwOnCaptcha is true on getContent', async () => {
+        const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
+        const url = `file://${filePath}`
+
+        const odysseus = new Odysseus({ delay: 100, throwOnCaptcha: false }, logger)
+        await odysseus.init()
+
+        await expect(odysseus.getContent(url, 100, false, true)).rejects.toThrow(CaptchaError)
+
+        await odysseus.close()
+      })
     })
   })
 })
