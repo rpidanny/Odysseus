@@ -2,7 +2,8 @@ import { convert } from 'html-to-text'
 import pRetry from 'p-retry'
 import { Browser, BrowserContext, chromium, Page } from 'playwright'
 
-import { IConfig, ILogger } from './interfaces.js'
+import { CaptchaError } from './errors/captcha.error.js'
+import { IConfig, IGetContentOptions, ILogger } from './interfaces.js'
 
 export class Odysseus {
   private browser!: Browser
@@ -13,6 +14,7 @@ export class Odysseus {
   private readonly defaultDelay = 3_000
   private readonly defaultRetry = 3
   private readonly defaultWaitOnCaptcha = true
+  private readonly defaultThrowOnCaptcha = false
   private readonly defaultCaptchaDelay = 10_000
 
   private captchaMarkers: string[] = [
@@ -45,6 +47,7 @@ body {
   private delay: number
   private retry: number
   private waitOnCaptcha: boolean
+  private throwOnCaptcha: boolean
   private captchaDelay: number
 
   constructor(
@@ -56,6 +59,7 @@ body {
     this.retry = this.config.retry ?? this.defaultRetry
     this.waitOnCaptcha = this.config.waitOnCaptcha ?? this.defaultWaitOnCaptcha
     this.captchaDelay = this.config.captchaDelay ?? this.defaultCaptchaDelay
+    this.throwOnCaptcha = this.config.throwOnCaptcha ?? this.defaultThrowOnCaptcha
   }
 
   public async init(): Promise<void> {
@@ -77,6 +81,7 @@ body {
     url: string,
     delay: number,
     waitOnCaptcha: boolean,
+    throwOnCaptcha: boolean,
   ): Promise<string> {
     const page = await this.context.newPage()
 
@@ -87,17 +92,24 @@ body {
 
     let content = await page.content()
 
-    if (waitOnCaptcha && this.isCaptcha(content)) {
-      this.logger?.warn('Captcha detected. Waiting for user input...')
+    if (this.isCaptcha(content)) {
+      if (throwOnCaptcha && !waitOnCaptcha) {
+        await page.close()
+        throw new CaptchaError()
+      }
 
-      do {
+      if (waitOnCaptcha) {
+        this.logger?.warn('Captcha detected. Waiting for user input...')
+
+        do {
+          await page.waitForTimeout(this.captchaDelay)
+          content = await page.content()
+        } while (this.isCaptcha(content))
+
+        // wait for the page to load after the captcha
         await page.waitForTimeout(this.captchaDelay)
         content = await page.content()
-      } while (this.isCaptcha(content))
-
-      // wait for the page to load after the captcha
-      await page.waitForTimeout(this.captchaDelay)
-      content = await page.content()
+      }
     }
 
     await page.close()
@@ -113,12 +125,8 @@ body {
     return text.trim()
   }
 
-  public async getTextContent(
-    url: string,
-    delay?: number,
-    waitOnCaptcha?: boolean,
-  ): Promise<string> {
-    const html = await this.getContent(url, delay, waitOnCaptcha)
+  public async getTextContent(url: string, opts: IGetContentOptions = {}): Promise<string> {
+    const html = await this.getContent(url, opts)
     return this.stripHtmlTags(html)
   }
 
@@ -132,7 +140,10 @@ body {
     return this.captchaMarkers.some(marker => content.includes(marker))
   }
 
-  public async getContent(url: string, delay?: number, waitOnCaptcha?: boolean): Promise<string> {
+  public async getContent(
+    url: string,
+    { delay, waitOnCaptcha, throwOnCaptcha }: IGetContentOptions = {},
+  ): Promise<string> {
     if (!this.browser) {
       throw new Error('Browser not initialized. Call init() first.')
     }
@@ -140,10 +151,17 @@ body {
     this.logger?.debug(`Fetching content from ${url}`)
 
     return pRetry(
-      this.getPageContent.bind(this, url, delay || this.delay, waitOnCaptcha ?? this.waitOnCaptcha),
+      this.getPageContent.bind(
+        this,
+        url,
+        delay || this.delay,
+        waitOnCaptcha ?? this.waitOnCaptcha,
+        throwOnCaptcha ?? this.throwOnCaptcha,
+      ),
       {
         retries: this.retry,
         onFailedAttempt: error => {
+          if (error instanceof CaptchaError) throw error
           this.logger?.warn(
             `Attempt ${error.attemptNumber} failed with "${error.message}". There are ${error.retriesLeft} retries left.`,
           )

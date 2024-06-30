@@ -3,6 +3,7 @@ import fs from 'fs/promises'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 
+import { CaptchaError } from './errors/captcha.error'
 import { Odysseus } from './odysseus'
 
 describe('Odysseus', () => {
@@ -22,7 +23,13 @@ describe('Odysseus', () => {
 
   beforeEach(async () => {
     odysseus = new Odysseus(
-      { delay: 100, captchaDelay: 200, headless: true, waitOnCaptcha: false },
+      {
+        delay: 100,
+        captchaDelay: 200,
+        headless: true,
+        waitOnCaptcha: false,
+        throwOnCaptcha: false,
+      },
       logger,
     )
 
@@ -37,7 +44,7 @@ describe('Odysseus', () => {
 
   describe('getContent', () => {
     it('should fetch content from a URL', async () => {
-      const content = await odysseus.getContent(url, 1_000)
+      const content = await odysseus.getContent(url, { delay: 1_000 })
 
       expect(content).toContain('Example Domain')
     })
@@ -50,10 +57,10 @@ describe('Odysseus', () => {
 
     it('should fetch contents from multiple calls concurrently', async () => {
       const contents = await Promise.all([
-        odysseus.getContent(url, 1_000),
-        odysseus.getContent('https://www.iana.org/help/example-domains', 1_000),
-        odysseus.getContent(url, 1_000),
-        odysseus.getContent('https://www.iana.org/help/example-domains', 1_000),
+        odysseus.getContent(url, { delay: 1_000 }),
+        odysseus.getContent('https://www.iana.org/help/example-domains', { delay: 1_000 }),
+        odysseus.getContent(url, { delay: 1_000 }),
+        odysseus.getContent('https://www.iana.org/help/example-domains', { delay: 1_000 }),
       ])
 
       expect(contents[0]).toContain('This domain is for use in illustrative examples in documents')
@@ -64,29 +71,29 @@ describe('Odysseus', () => {
 
     it('should throw error when getContent is called without init', async () => {
       const odysseus = new Odysseus({ headless: true }, logger)
-      await expect(odysseus.getContent(url, 1_000)).rejects.toThrow(Error)
+      await expect(odysseus.getContent(url, { delay: 1_000 })).rejects.toThrow(Error)
     })
 
     it('should throw error when browser closed', async () => {
-      const content = await odysseus.getContent(url, 1_000)
+      const content = await odysseus.getContent(url, { delay: 1_000 })
       expect(content).toContain('Example Domain')
 
       await odysseus.close()
 
-      await expect(odysseus.getContent(url, 1_000)).rejects.toThrow(Error)
+      await expect(odysseus.getContent(url, { delay: 1_000 })).rejects.toThrow(Error)
     })
 
     it('should fetch content from a dynamic web page', async () => {
       const filePath = path.join(__dirname, '../test', 'data', 'page1.html')
       const url = `file://${filePath}`
 
-      const content = await odysseus.getContent(url, 1_000)
+      const content = await odysseus.getContent(url, { delay: 1_000 })
 
       expect(content).toContain('<div id="message">New Text</div>')
     })
 
     it('should log debug messages', async () => {
-      await odysseus.getContent(url, 1_000)
+      await odysseus.getContent(url, { delay: 1_000 })
 
       expect(debug).toHaveBeenCalledWith('Fetching content from https://example.com')
     })
@@ -103,7 +110,7 @@ describe('Odysseus', () => {
       const filePath = path.join(__dirname, '../test', 'data', 'page1.html')
       const url = `file://${filePath}`
 
-      const content = await odysseus.getTextContent(url, 1_000)
+      const content = await odysseus.getTextContent(url, { delay: 1_000 })
 
       expect(content).toEqual('WELCOME TO MY PAGE\n\nNew Text')
     })
@@ -152,7 +159,7 @@ describe('Odysseus', () => {
       const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
       const url = `file://${filePath}`
 
-      const getContentPromise = odysseus.getContent(url, 100, true)
+      const getContentPromise = odysseus.getContent(url, { delay: 1_000, waitOnCaptcha: true })
 
       await new Promise(resolve =>
         setTimeout(() => {
@@ -167,7 +174,7 @@ describe('Odysseus', () => {
       const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
       const url = `file://${filePath}`
 
-      const content = await odysseus.getContent(url, 1_000)
+      const content = await odysseus.getContent(url, { delay: 1_000, waitOnCaptcha: false })
 
       await odysseus.close()
 
@@ -181,11 +188,48 @@ describe('Odysseus', () => {
       const odysseus = new Odysseus({ delay: 100, waitOnCaptcha: true }, logger)
       await odysseus.init()
 
-      const content = await odysseus.getContent(url, 1_000, false)
+      const content = await odysseus.getContent(url, { delay: 1_000, waitOnCaptcha: false })
 
       await odysseus.close()
 
       expect(content).toContain('https://challenges.cloudflare.com/cdn-cgi/challenge-platform')
+    })
+
+    describe('throwOnCaptcha', () => {
+      it('should throw error on captcha when throwOnCaptcha is true on constructor', async () => {
+        const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
+        const url = `file://${filePath}`
+
+        const odysseus = new Odysseus(
+          { delay: 100, throwOnCaptcha: true, waitOnCaptcha: false },
+          logger,
+        )
+        await odysseus.init()
+
+        await expect(odysseus.getContent(url, { delay: 100 })).rejects.toThrow(CaptchaError)
+
+        await odysseus.close()
+      })
+
+      it('should throw error on captcha when throwOnCaptcha is true on getContent', async () => {
+        const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
+        const url = `file://${filePath}`
+
+        const odysseus = new Odysseus(
+          { delay: 100, throwOnCaptcha: false, waitOnCaptcha: false },
+          { debug: console.log, warn: console.log, error: console.log },
+        )
+        await odysseus.init()
+
+        await expect(
+          odysseus.getContent(url, {
+            delay: 100,
+            throwOnCaptcha: true,
+          }),
+        ).rejects.toThrow(CaptchaError)
+
+        await odysseus.close()
+      })
     })
   })
 })
