@@ -93,7 +93,10 @@ body {
     let content = await page.content()
 
     if (this.isCaptcha(content)) {
-      if (throwOnCaptcha && !waitOnCaptcha) throw new CaptchaError()
+      if (throwOnCaptcha && !waitOnCaptcha) {
+        await page.close()
+        throw new CaptchaError()
+      }
 
       if (waitOnCaptcha) {
         this.logger?.warn('Captcha detected. Waiting for user input...')
@@ -158,6 +161,7 @@ body {
       {
         retries: this.retry,
         onFailedAttempt: error => {
+          if (error instanceof CaptchaError) throw error
           this.logger?.warn(
             `Attempt ${error.attemptNumber} failed with "${error.message}". There are ${error.retriesLeft} retries left.`,
           )

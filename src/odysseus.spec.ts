@@ -23,7 +23,13 @@ describe('Odysseus', () => {
 
   beforeEach(async () => {
     odysseus = new Odysseus(
-      { delay: 100, captchaDelay: 200, headless: true, waitOnCaptcha: false },
+      {
+        delay: 100,
+        captchaDelay: 200,
+        headless: true,
+        waitOnCaptcha: false,
+        throwOnCaptcha: false,
+      },
       logger,
     )
 
@@ -211,7 +217,7 @@ describe('Odysseus', () => {
 
         const odysseus = new Odysseus(
           { delay: 100, throwOnCaptcha: false, waitOnCaptcha: false },
-          logger,
+          { debug: console.log, warn: console.log, error: console.log },
         )
         await odysseus.init()
 
