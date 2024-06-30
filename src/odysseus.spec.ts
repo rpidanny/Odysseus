@@ -38,7 +38,7 @@ describe('Odysseus', () => {
 
   describe('getContent', () => {
     it('should fetch content from a URL', async () => {
-      const content = await odysseus.getContent(url, 1_000)
+      const content = await odysseus.getContent(url, { delay: 1_000 })
 
       expect(content).toContain('Example Domain')
     })
@@ -51,10 +51,10 @@ describe('Odysseus', () => {
 
     it('should fetch contents from multiple calls concurrently', async () => {
       const contents = await Promise.all([
-        odysseus.getContent(url, 1_000),
-        odysseus.getContent('https://www.iana.org/help/example-domains', 1_000),
-        odysseus.getContent(url, 1_000),
-        odysseus.getContent('https://www.iana.org/help/example-domains', 1_000),
+        odysseus.getContent(url, { delay: 1_000 }),
+        odysseus.getContent('https://www.iana.org/help/example-domains', { delay: 1_000 }),
+        odysseus.getContent(url, { delay: 1_000 }),
+        odysseus.getContent('https://www.iana.org/help/example-domains', { delay: 1_000 }),
       ])
 
       expect(contents[0]).toContain('This domain is for use in illustrative examples in documents')
@@ -65,29 +65,29 @@ describe('Odysseus', () => {
 
     it('should throw error when getContent is called without init', async () => {
       const odysseus = new Odysseus({ headless: true }, logger)
-      await expect(odysseus.getContent(url, 1_000)).rejects.toThrow(Error)
+      await expect(odysseus.getContent(url, { delay: 1_000 })).rejects.toThrow(Error)
     })
 
     it('should throw error when browser closed', async () => {
-      const content = await odysseus.getContent(url, 1_000)
+      const content = await odysseus.getContent(url, { delay: 1_000 })
       expect(content).toContain('Example Domain')
 
       await odysseus.close()
 
-      await expect(odysseus.getContent(url, 1_000)).rejects.toThrow(Error)
+      await expect(odysseus.getContent(url, { delay: 1_000 })).rejects.toThrow(Error)
     })
 
     it('should fetch content from a dynamic web page', async () => {
       const filePath = path.join(__dirname, '../test', 'data', 'page1.html')
       const url = `file://${filePath}`
 
-      const content = await odysseus.getContent(url, 1_000)
+      const content = await odysseus.getContent(url, { delay: 1_000 })
 
       expect(content).toContain('<div id="message">New Text</div>')
     })
 
     it('should log debug messages', async () => {
-      await odysseus.getContent(url, 1_000)
+      await odysseus.getContent(url, { delay: 1_000 })
 
       expect(debug).toHaveBeenCalledWith('Fetching content from https://example.com')
     })
@@ -104,7 +104,7 @@ describe('Odysseus', () => {
       const filePath = path.join(__dirname, '../test', 'data', 'page1.html')
       const url = `file://${filePath}`
 
-      const content = await odysseus.getTextContent(url, 1_000)
+      const content = await odysseus.getTextContent(url, { delay: 1_000 })
 
       expect(content).toEqual('WELCOME TO MY PAGE\n\nNew Text')
     })
@@ -153,7 +153,7 @@ describe('Odysseus', () => {
       const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
       const url = `file://${filePath}`
 
-      const getContentPromise = odysseus.getContent(url, 100, true)
+      const getContentPromise = odysseus.getContent(url, { delay: 1_000, waitOnCaptcha: true })
 
       await new Promise(resolve =>
         setTimeout(() => {
@@ -168,7 +168,7 @@ describe('Odysseus', () => {
       const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
       const url = `file://${filePath}`
 
-      const content = await odysseus.getContent(url, 1_000)
+      const content = await odysseus.getContent(url, { delay: 1_000, waitOnCaptcha: false })
 
       await odysseus.close()
 
@@ -182,7 +182,7 @@ describe('Odysseus', () => {
       const odysseus = new Odysseus({ delay: 100, waitOnCaptcha: true }, logger)
       await odysseus.init()
 
-      const content = await odysseus.getContent(url, 1_000, false)
+      const content = await odysseus.getContent(url, { delay: 1_000, waitOnCaptcha: false })
 
       await odysseus.close()
 
@@ -200,7 +200,7 @@ describe('Odysseus', () => {
         )
         await odysseus.init()
 
-        await expect(odysseus.getContent(url, 100)).rejects.toThrow(CaptchaError)
+        await expect(odysseus.getContent(url, { delay: 100 })).rejects.toThrow(CaptchaError)
 
         await odysseus.close()
       })
@@ -209,10 +209,18 @@ describe('Odysseus', () => {
         const filePath = path.join(__dirname, '../test', 'data', 'cloudflare-captcha.html')
         const url = `file://${filePath}`
 
-        const odysseus = new Odysseus({ delay: 100, throwOnCaptcha: false }, logger)
+        const odysseus = new Odysseus(
+          { delay: 100, throwOnCaptcha: false, waitOnCaptcha: false },
+          logger,
+        )
         await odysseus.init()
 
-        await expect(odysseus.getContent(url, 100, false, true)).rejects.toThrow(CaptchaError)
+        await expect(
+          odysseus.getContent(url, {
+            delay: 100,
+            throwOnCaptcha: true,
+          }),
+        ).rejects.toThrow(CaptchaError)
 
         await odysseus.close()
       })

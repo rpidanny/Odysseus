@@ -3,7 +3,7 @@ import pRetry from 'p-retry'
 import { Browser, BrowserContext, chromium, Page } from 'playwright'
 
 import { CaptchaError } from './errors/captcha.error.js'
-import { IConfig, ILogger } from './interfaces.js'
+import { IConfig, IGetContentOptions, ILogger } from './interfaces.js'
 
 export class Odysseus {
   private browser!: Browser
@@ -122,12 +122,8 @@ body {
     return text.trim()
   }
 
-  public async getTextContent(
-    url: string,
-    delay?: number,
-    waitOnCaptcha?: boolean,
-  ): Promise<string> {
-    const html = await this.getContent(url, delay, waitOnCaptcha)
+  public async getTextContent(url: string, opts: IGetContentOptions = {}): Promise<string> {
+    const html = await this.getContent(url, opts)
     return this.stripHtmlTags(html)
   }
 
@@ -143,9 +139,7 @@ body {
 
   public async getContent(
     url: string,
-    delay?: number,
-    waitOnCaptcha?: boolean,
-    throwOnCaptcha?: boolean,
+    { delay, waitOnCaptcha, throwOnCaptcha }: IGetContentOptions = {},
   ): Promise<string> {
     if (!this.browser) {
       throw new Error('Browser not initialized. Call init() first.')

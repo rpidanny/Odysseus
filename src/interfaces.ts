@@ -13,3 +13,9 @@ export interface IConfig {
   throwOnCaptcha?: boolean
   initHtml?: string
 }
+
+export interface IGetContentOptions {
+  delay?: number
+  waitOnCaptcha?: boolean
+  throwOnCaptcha?: boolean
+}
