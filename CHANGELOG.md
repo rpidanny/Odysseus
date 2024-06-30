@@ -1,3 +1,9 @@
+## [2.5.0](https://github.com/rpidanny/odysseus/compare/v2.4.0...v2.5.0) (2024-06-30)
+
+### Features
+
+* throw captcha error ([#23](https://github.com/rpidanny/odysseus/issues/23)) ([c634073](https://github.com/rpidanny/odysseus/commit/c634073e97439816fa36170306a4b0a442ab9b25))
+
 ## [2.4.0](https://github.com/rpidanny/odysseus/compare/v2.3.0...v2.4.0) (2024-06-21)
 
 ### Features
