@@ -116,6 +116,22 @@ describe('Odysseus', () => {
     })
   })
 
+  describe('getMarkdownContent', () => {
+    it('should convert html to markdown', async () => {
+      const filePath = path.join(__dirname, '../test', 'data', 'page1.html')
+      const url = `file://${filePath}`
+
+      const content = await odysseus.getMarkdownContent(url, { delay: 1_000 })
+
+      expect(content).toEqual(`  Text Rendering After 2 Seconds
+
+Welcome to My Page
+==================
+
+New Text`)
+    })
+  })
+
   describe('captcha', () => {
     describe('isCaptcha', () => {
       it.each`
