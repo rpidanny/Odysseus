@@ -1,3 +1,9 @@
+## [2.6.0](https://github.com/rpidanny/odysseus/compare/v2.5.0...v2.6.0) (2024-07-05)
+
+### Features
+
+* add getMarkdownContent ([#25](https://github.com/rpidanny/odysseus/issues/25)) ([d7aded6](https://github.com/rpidanny/odysseus/commit/d7aded6f8c0786d68312bfd9dd6f157832bec4f3))
+
 ## [2.5.0](https://github.com/rpidanny/odysseus/compare/v2.4.0...v2.5.0) (2024-06-30)
 
 ### Features
