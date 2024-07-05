@@ -1,6 +1,7 @@
 import { convert } from 'html-to-text'
 import pRetry from 'p-retry'
 import { Browser, BrowserContext, chromium, Page } from 'playwright'
+import TurndownService from 'turndown'
 
 import { CaptchaError } from './errors/captcha.error.js'
 import { IConfig, IGetContentOptions, ILogger } from './interfaces.js'
@@ -9,6 +10,7 @@ export class Odysseus {
   private browser!: Browser
   private context!: BrowserContext
   private mainPage!: Page
+  private turndown!: TurndownService
 
   private readonly defaultHeadless = true
   private readonly defaultDelay = 3_000
@@ -60,6 +62,10 @@ body {
     this.waitOnCaptcha = this.config.waitOnCaptcha ?? this.defaultWaitOnCaptcha
     this.captchaDelay = this.config.captchaDelay ?? this.defaultCaptchaDelay
     this.throwOnCaptcha = this.config.throwOnCaptcha ?? this.defaultThrowOnCaptcha
+
+    this.turndown = new TurndownService()
+    this.turndown.remove('script')
+    this.turndown.remove('style')
   }
 
   public async init(): Promise<void> {
@@ -128,6 +134,11 @@ body {
   public async getTextContent(url: string, opts: IGetContentOptions = {}): Promise<string> {
     const html = await this.getContent(url, opts)
     return this.stripHtmlTags(html)
+  }
+
+  public async getMarkdownContent(url: string, opts: IGetContentOptions = {}): Promise<string> {
+    const html = await this.getContent(url, opts)
+    return this.turndown.turndown(html)
   }
 
   public async close(): Promise<void> {
